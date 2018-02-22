@@ -28,9 +28,15 @@ class App extends Component {
     this.deleteBuyer = this.deleteBuyer.bind( this );
   }
 
+
+
   getVehicles() {
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios.get('https://joes-autos.herokuapp.com/api/vehicles').then( results => {
+      toast.success("GOT YER CARS MAN!");
+      this.setState({
+        vehiclesToDisplay: results.data
+      })
+    }).catch( () => toast.error("I SUCK AT GETTING CARS!"));
   }
 
   getPotentialBuyers() {
@@ -58,8 +64,12 @@ class App extends Component {
   }
 
   updatePrice( priceChange, id ) {
-    // axios (PUT)
-    // setState with response -> vehiclesToDisplay
+    axios.put(`https://joes-autos.herokuapp.com/api/vehicles/${id}/${priceChange}`).then( response => {
+      toast.success("JUST CHANGED THE PRICE ON THAT BITCH!");
+      this.setState({
+        vehiclesToDisplay: response.data.vehicles
+      })
+    }).catch( () => toast.error("I SUCK AT UPDATING PRICES!"))
   }
 
   addCar() {
@@ -70,9 +80,12 @@ class App extends Component {
       year: this.refs.year.value,
       price: this.refs.price.value
     };
-
-    // axios (POST)
-    // setState with response -> vehiclesToDisplay
+    axios.post('https://joes-autos.herokuapp.com/api/vehicles', newCar).then( response => {
+      toast.success("BORING");
+      this.setState({
+        vehiclesToDisplay: response.data.vehicles
+      })
+    }).catch( () => toast.error("I SUCK AT ADDING NEW CARS!"))
   }
 
   addBuyer() {
