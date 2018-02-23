@@ -32,7 +32,6 @@ class App extends Component {
 
   getVehicles() {
     axios.get('https://joes-autos.herokuapp.com/api/vehicles').then( results => {
-      toast.success("GOT YER CARS MAN!");
       this.setState({
         vehiclesToDisplay: results.data
       })
@@ -40,32 +39,47 @@ class App extends Component {
   }
 
   getPotentialBuyers() {
-    // axios (GET)
-    // setState with response -> buyersToDisplay
+    axios.get('https://joes-autos.herokuapp.com/api/buyers')
+      .then( response => {
+        this.setState({
+          buyersToDisplay: response.data
+        })
+      })
+      .catch( () => toast.error("couldn't get the buyers"));
   }
 
   sellCar( id ) {
-    // axios (DELETE)
-    // setState with response -> vehiclesToDisplay
+    axios.delete(`https://joes-autos.herokuapp.com/api/vehicles/${id}`).then( response => {
+      this.setState({
+        vehiclesToDisplay: response.data.vehicles
+      })
+    }).catch( () => toast.error("you didn't sell the car"))
   }
 
   filterByMake() {
     let make = this.refs.selectedMake.value;
 
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?make=${make}`).then( response => {
+      this.setState({
+        vehiclesToDisplay: response.data
+      })
+    }).catch( () => toast.error('did not filter make'))
   }
 
   filterByColor() {
     let color = this.refs.selectedColor.value;
 
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?color=${color}`)
+      .then( response => {
+        this.setState({
+          vehiclesToDisplay: response.data
+        })
+      })
+      .catch( () => toast.error("could not filter color"))
   }
 
   updatePrice( priceChange, id ) {
     axios.put(`https://joes-autos.herokuapp.com/api/vehicles/${id}/${priceChange}`).then( response => {
-      toast.success("JUST CHANGED THE PRICE ON THAT BITCH!");
       this.setState({
         vehiclesToDisplay: response.data.vehicles
       })
@@ -81,7 +95,7 @@ class App extends Component {
       price: this.refs.price.value
     };
     axios.post('https://joes-autos.herokuapp.com/api/vehicles', newCar).then( response => {
-      toast.success("BORING");
+      toast.success("add a new car success");
       this.setState({
         vehiclesToDisplay: response.data.vehicles
       })
@@ -95,27 +109,47 @@ class App extends Component {
       address: this.refs.address.value
     };
 
-    //axios (POST)
-    // setState with response -> buyersToDisplay
+    axios.post('https://joes-autos.herokuapp.com/api/buyers', newBuyer)
+      .then( response => {
+        this.setState({
+          buyersToDisplay: response.data.buyers
+        })
+      })
+      .catch( () => toast.error("couldn't add buyer"))
   }
 
   deleteBuyer( id ) {
-    // axios (DELETE)
-    //setState with response -> buyersToDisplay
+    axios.delete(`https://joes-autos.herokuapp.com/api/buyers/${id}`)
+      .then( response => {
+        this.setState({
+          buyersToDisplay: response.data.buyers
+        })
+      })
+      .catch( () => toast.error("couldn't delete buyer"))
   }
 
   nameSearch() {
     let searchLetters = this.refs.searchLetters.value;
 
-    // axios (GET)
-    // setState with response -> buyersToDisplay
+    axios.get(`https://joes-autos.herokuapp.com/api/buyers?name=${searchLetters}`)
+      .then( res => {
+        this.setState({
+          buyersToDisplay: res.data
+        })
+      })
+      .catch( () => toast.error('did not search by name'))
   }
 
   byYear() {
     let year = this.refs.searchYear.value;
 
-    // axios (GET)
-    // setState with response -> vehiclesToDisplay
+    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?year=${year}`)
+      .then( res => {
+        this.setState({
+          vehiclesToDisplay: res.data
+        })
+      })
+      .catch( () => toast.error('did not filter by year'))
   }
 
   // Do not edit the code below
@@ -203,9 +237,8 @@ class App extends Component {
 
           <select onChange={ this.filterByMake }
                   ref='selectedMake'
-                  className='btn-sp'
-                  value="">
-            <option value="" disabled>Filter by make</option>
+                  className='btn-sp'>
+            <option value="">Filter by make</option>
             <option value="Suzuki">Suzuki</option>
             <option value="GMC">GMC</option>
             <option value="Ford">Ford</option>
@@ -219,9 +252,8 @@ class App extends Component {
 
           <select ref='selectedColor'
                   onChange={ this.filterByColor }
-                  className='btn-sp'
-                  value="">
-            <option value="" disabled>Filter by color</option>
+                  className='btn-sp'>
+            <option value="">Filter by color</option>
             <option value="red">Red</option>
             <option value="green">Green</option>
             <option value="Purple">Purple</option>
@@ -238,7 +270,7 @@ class App extends Component {
            <input ref='searchYear'
                   className='btn-sp'
                   type='number'
-                  placeholder='Year' />
+                  placeholder='Exclude this year' />
 
           <button onClick={ this.byYear }
                   className='btn-inp'>
